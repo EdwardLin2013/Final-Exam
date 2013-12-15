@@ -1,0 +1,14 @@
+//			System.out.println(strVertices[0]);	
+//		System.out.println("numOfVertices: " + numOfVertices);
+	
+		// for debug
+		/*
+		for(i=0; i<numOfVertices; i++)
+		{
+			for(j=0; j<numOfVertices; j++)
+			{
+				System.out.print(adjacencyMatrix[i][j] + " ");
+			}
+			System.out.print("\n");
+		}
+		*/
