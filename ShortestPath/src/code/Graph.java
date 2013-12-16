@@ -1,273 +1,104 @@
 package code;
 
-//import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Graph 
 {
-//	List<String> matchingID;
 	List<Vertex> Vertices;
-	double Edges[][];
 	int numOfVertices;
+	int T;
 	
-	int time;					// For DFS
-	
-	Graph(List<Vertex> Vertices, double[][] Edges)
+	Graph(List<Vertex> Vertices, int numOfVertices)
 	{
 		this.Vertices = Vertices;
-		this.Edges = Edges;
+		this.numOfVertices = numOfVertices;
 		
-		numOfVertices = Vertices.size();
-	}
-
-	/*
-	Graph(List<Vertex> Vertices, double[][] Edges, List<String> matchingID)
-	{
-		this.Vertices = Vertices;
-		this.Edges = Edges;
-		this.matchingID = matchingID;
-		
-		numOfVertices = Vertices.size();
-	}
-	*/
-	
-	public Vertex getVertex(int ID)
-	{
-		int i;
-		
-		for(i=0; i<numOfVertices; i++)
-		{
-			if(Vertices.get(i).isEqual(ID))
-				return Vertices.get(i);
-		}
-		
-		return null;
+		T=200;
 	}
 	
-	//----------------Longest Simple Path in Directed Acyclic Graph (Begin)--------------------------------//
-	public void Longest_Path_Main(Vertex s, Vertex t)
-	{
+	//------------------------------ Calculate Optimal Solution (Begin)--------------------------------------//
+	int minimalTime(Vertex src, Vertex dst, int time)
+	{		
 		initVertices();
-		Longest_Path_Aux(s, t);
+		
+		/*
+		 *  Now, DFS searching approach
+		 * 
+		 *  calculateMinimalTime()
+		 *  For every vertex v, we check whether v's neighbor, u
+		 *  
+		 *    Base Case: If u is the src, we use T and the similar method in initVertices() to calculate
+		 *    			 the waiting time from u to v, mark down this value in the v.pathWeight table
+		 *    			 which contain the minimal waiting time from u to v and which time state is used in u
+		 *    Recursive Case: If u is not the src, we then travel u's neighbors by calling itself again calculateMinimalTime()
+		 *					After examining all u, all u.pathWeight table should be set, these table helps us to know that,
+		 *					from the src to u, what is the minimal waiting time from s to u and which time state is used in u
+		 *
+		 *					Hence, based on u.pathWeight and v.edgesWeight, we can know the minimal waiting time from s to v and
+		 *					which time state is used. Store these info in v.pathWeight.
+		 */
+		
+		/*	Now, return the minimalTime from src to dst, or output the shortest path here
+		 *  Given the dst, we simply return dst.pathWeight[src.ID]
+		 */
+		
+		return 0;
 	}
+	
+	
+	/*
+	 *  No matter which start time is given, if the Vertex v is on the path, we should know which of its time
+	 *  state is chosen, and then calculate the waiting time to travel to its neighbor u
+	 *  
+	 *  This function try to calculate all possible waiting time from v to its neighbor
+	 *  and store it in the vertex v.edgesWeight
+	 */
 	private void initVertices()
 	{
+		int i,j;
+		
 		for(Vertex v:Vertices)
 		{
-			v.key = Double.NEGATIVE_INFINITY;
-			v.next = null;
-		}
-	}
-	public void Longest_Path_Aux(Vertex u, Vertex t)
-	{
-		if(u.isEqual(t))
-			u.key = 0;
-		else if (u.next!= null)
-			return;
-		else
-		{
-			for(Vertex v:AdjVertices(u))
+			// Get the Edge Info, i: time Stamp, j: neighbor
+			v.edgesWeight = new int[v.schedule.size()][];
+			for(i=0; i<v.schedule.size(); i++)
+				v.edgesWeight[i] = new int[numOfVertices];
+			
+			for(i=0; i<v.schedule.size(); i++)
 			{
-				Longest_Path_Aux(v, t);
-				if( u.key < (v.key + Edges[u.ID][v.ID]) )
-				{
-					u.key = v.key + Edges[u.ID][v.ID];
-					u.next = v;
-				}
-			}
-		}
-	}
-//	public void printLongest_Path(Vertex s, Vertex t, OutputStreamWriter out)
-	public void printLongest_Path(Vertex s, Vertex t)
-	{
-		Vertex u = s;
-		System.out.print(u.ID + " ");
-		
-		while(!u.isEqual(t))
-		{
-			System.out.print(u.next.ID + " ");
-			u = u.next;
-		}
-	}
-	//----------------Longest Simple Path in Directed Acyclic Graph (End)--------------------------------//	
-
-	
-	//------------------------------All-Pairs Shortest Paths (Begin)--------------------------------------//
-	public double[][] slowAPSP()
-	{
-		int i, j, m;
-		double nxtL[][];
-		double prevL[][] = new double[numOfVertices][];
-		for(i=0; i<numOfVertices; i++)
-			prevL[i] = new double[numOfVertices];
-		
-		for(i=0; i<numOfVertices; i++)
-			for(j=0; j<numOfVertices; j++)
-				prevL[i][j] = Edges[i][j];
-			
-		for(m=1; m<numOfVertices-1; m++)
-		{
-			nxtL = extend(prevL);
-			
-			for(i=0; i<numOfVertices; i++)
 				for(j=0; j<numOfVertices; j++)
-					prevL[i][j] = nxtL[i][j];
-		}
-					
-		return prevL;
-	}
-	private double[][] extend(double[][] L)
-	{
-		int i, j, k;
-		double nxtL[][] = new double[numOfVertices][];
-		for(i=0; i<numOfVertices; i++)
-			nxtL[i] = new double[numOfVertices];
-		
-		for(i=0; i<numOfVertices; i++)
-		{
-			for(j=0; j<numOfVertices; j++)
-			{
-				nxtL[i][j] = Double.POSITIVE_INFINITY;
-				for(k=0; k<numOfVertices; k++)
 				{
-					if(nxtL[i][j] > L[i][k] + Edges[k][j])
-						nxtL[i][j] = L[i][k] + Edges[k][j];
+					for(Vertex u:v.neighbors)
+					{
+						if(u.ID == j)
+						{
+							//calculate all possible waiting time from v to its neighbor and store it in the vertex v.edgesWeight
+//							int prev;
+							for(int k=0; k<u.schedule.size(); k++)
+							{
+//								prev = k;
+								if(v.schedule.get(i) > u.schedule.get(k) && v.schedule.get(i) > u.schedule.get(k+1))
+								{
+									
+								}
+								
+//								temp = k;
+							}
+							
+							
+							
+//							v.edgesWeight[i][j] =
+									
+									
+									
+						}
+//						else	
+//							v.edgesWeight[i][j] = Integer.NEGATIVE_INFINITY;
+					}
 				}
 			}
 		}
-
-		return nxtL;		
 	}
-	//------------------------------All-Pairs Shortest Paths (END)--------------------------------------//
+	//------------------------------ Calculate Optimal Solution (End)--------------------------------------//
 	
-	//-------------------------------------Dijkstra (Begin)--------------------------------------//
-	public List<Vertex> Dijkstra(Vertex src)
-	{
-		initSingleSource(src);
-	
-		ArrayList<Vertex> S = new ArrayList<Vertex>();
-		PriorityQueue Q = new PriorityQueue((ArrayList<Vertex>) Vertices);
-		
-		while(!Q.isEmpty())
-		{
-			Vertex u = Q.extractMin();
-			S.add(u);	
-			for(Vertex v:AdjVertices(u))
-				relax(u,v);
-		}
-
-		return S;
-	}
-	// Edge Must have positive weight and less than positive infinite
-	private List<Vertex> AdjVertices(Vertex u)
-	{
-		ArrayList<Vertex> ret = new ArrayList<Vertex>();
-		int i;
-		
-		System.out.print("u: " + u.ID + "'s adj are:");
-		for(i=0; i<numOfVertices; i++)
-		{
-			if(Edges[u.ID][i]>0 && Edges[u.ID][i]<Double.POSITIVE_INFINITY)
-			{
-				System.out.print(Vertices.get(i).ID + " ");
-				ret.add(Vertices.get(i));
-			}
-		}
-		System.out.print("\n");
-		
-		return ret;
-	}
-	private void initSingleSource(Vertex src)
-	{
-		for(Vertex v:Vertices)
-		{
-			v.key = Double.POSITIVE_INFINITY;
-			v.parent = null;
-		}
-		src.key = 0;
-	}
-	
-	private void relax(Vertex u, Vertex v)
-	{
-		if(v.key > u.key + Edges[u.ID][v.ID])
-		{
-			v.key = u.key + Edges[u.ID][v.ID];
-			v.parent = u;
-		}
-	}
-	//-------------------------------------Dijkstra (End)--------------------------------------//
-
-	//-------------------------------------Topological_Sort_DAT (Begin)--------------------------------------//
-	@SuppressWarnings("unchecked")
-	public List<Vertex> Topological_Sort_DAT()
-	{
-		QuickSort engine = new QuickSort();
-		DFS();
-		
-		ArrayList<Vertex> SortedVectices = (ArrayList<Vertex>) ((ArrayList<Vertex>)Vertices).clone();
-		
-		return engine.sort(SortedVectices, 0, SortedVectices.size()-1);
-	}
-	//-------------------------------------Topological_Sort_DAT (END)--------------------------------------//
-	
-	//-------------------------------------DFS (Begin)--------------------------------------//
-	public void DFS()
-	{
-		for(Vertex v:Vertices)
-		{
-			v.color = Color.WHITE;
-			v.parent = null;
-		}
-		
-		time = 0;
-		
-		for(Vertex u:Vertices)
-		{
-			// If Graph is connected, DFS_Visit(u) just executed once!
-			if(u.color == Color.WHITE)
-				DFS_Visit(u);
-		}
-	}
-	private void DFS_Visit(Vertex u)
-	{
-		time++;
-		u.key = time;
-		u.color = Color.GREY;				// discover u
-		
-		// Explore (u,v)
-		for(Vertex v:AdjVertices(u))
-		{
-			if(v.color == Color.WHITE)
-			{
-				v.parent = u;
-				DFS_Visit(v);
-			}
-			//
-			/*
-			else if(v.ID != u.parent.ID && 
-			{
-			
-			}
-			*/
-		}
-		
-		u.color = Color.BLACK;
-		time++;
-		u.finishTime = time;				// finish u
-		
-	}
-	//-------------------------------------DFS (END)--------------------------------------//
-	
-	public void printAdjacencyMatrix()
-	{
-		int i, j;
-		
-		for(i=0; i<numOfVertices; i++)
-		{
-			for(j=0; j<numOfVertices; j++)
-				System.out.print(Edges[i][j] + " ");
-			System.out.print("\n");
-		}
-	}
 }

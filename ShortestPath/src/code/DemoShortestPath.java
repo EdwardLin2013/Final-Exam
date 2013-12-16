@@ -7,6 +7,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+ *  Only consider this file, Graph.java and Vertex.java
+ */
 public class DemoShortestPath 
 {
 	public static void main(String[] args) throws IOException
@@ -14,7 +17,7 @@ public class DemoShortestPath
 		if(args.length != 2 || args[0].equalsIgnoreCase("help"))
 		{
 			System.out.println("Argument is empty! Please provide the path of the input.txt");
-			System.out.println("DemoShortestPath Path/to/AdjList.txt Path/to/Schedule.txt");
+			System.out.println("DemoShortestPath Path/to/nb_trace.txt Path/to/schedule_trace.txt");
 			return;
 		}
 
@@ -32,6 +35,7 @@ public class DemoShortestPath
 		// Graph Parameters
 		ArrayList<Vertex> inputVertices = new ArrayList<Vertex>();
 		int numOfVertices;
+		Graph myGraph;
 		
 		//------------------------------ Import Graph Info From AdjList (Begin)--------------------------------------//
 		// Get the Vertices ID first, store as the first element in each line
@@ -75,7 +79,6 @@ public class DemoShortestPath
 		}
 		getAdjListInfo.close();
 
-
 		// Get the Vertex's Schedule
 		i=0;
 		while (getSchedule.hasNextLine())
@@ -103,6 +106,8 @@ public class DemoShortestPath
 		//------------------------------ Import Graph Info From AdjList (End)--------------------------------------//
 	
 		//------------------------------ Calculate Optimal Solution (Begin)--------------------------------------//
+		myGraph = new Graph(inputVertices, numOfVertices);
+//		myGraph.minimalTime(src, dst, startingTime)
 		
 		
 		//------------------------------ Calculate Optimal Solution (End)--------------------------------------//		

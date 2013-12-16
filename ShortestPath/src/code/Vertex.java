@@ -9,6 +9,9 @@ public class Vertex
 	ArrayList<Vertex> neighbors;
 	ArrayList<Integer> schedule;
 	
+	int edgesWeight[][];				// // Get the Edge Info, i: time Stamp, j: neighbor
+	int pathWeight[][];
+	
 	Vertex(int ID)
 	{
 		this.ID = ID;
